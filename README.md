@@ -104,6 +104,7 @@ variacao-preco-combustivel/
 ├── requirements.txt
 ├── README.md
 ├── index.html              # página do projeto (GitHub Pages)
+├── css/style.css           # estilos da página do projeto
 ├── dados/                  # CSV, IPCA (cache) e GeoJSON
 ├── database/               # combustiveis.db
 ├── notebooks/              # analise_precos_combustiveis.ipynb
