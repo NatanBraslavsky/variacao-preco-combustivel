@@ -1,8 +1,3 @@
-"""Leitura, limpeza e engenharia de atributos da base de combustíveis.
-
-As mesmas funções são usadas pelo notebook e pelo dashboard, garantindo que
-as duas análises partam exatamente do mesmo tratamento.
-"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -37,22 +32,14 @@ NOMES_MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
 
 
 def carregar_bruto(origem=CAMINHO_CSV) -> pd.DataFrame:
-    """Lê o CSV original (UTF-8 com BOM) sem nenhuma transformação."""
     return pd.read_csv(origem, encoding="utf-8-sig")
 
 
 def validar_colunas(df: pd.DataFrame) -> list[str]:
-    """Retorna as colunas obrigatórias ausentes (lista vazia = base válida)."""
     return [c for c in COLUNAS_ESPERADAS if c not in df.columns]
 
 
 def limpar(df: pd.DataFrame) -> pd.DataFrame:
-    """Padroniza tipos, textos e consolida registros duplicados.
-
-    A base traz o mesmo trio (mês, UF, combustível) repetido com valores
-    diferentes. Como representam a mesma observação, consolidamos pela média
-    dos campos numéricos e pela moda do nível de preço.
-    """
     df = df.copy()
     for col in ["regiao", "uf", "combustivel", "nivel_preco"]:
         df[col] = df[col].astype(str).str.strip()
@@ -60,11 +47,9 @@ def limpar(df: pd.DataFrame) -> pd.DataFrame:
     df["data"] = pd.to_datetime(df["data"], errors="coerce")
     df = df.dropna(subset=["data", "preco_medio"])
 
-    # ano/mês passam a ser derivados da data, eliminando divergências
     df["ano"] = df["data"].dt.year
     df["mes"] = df["data"].dt.month
 
-    # garante preco_minimo <= preco_medio <= preco_maximo
     precos = np.sort(df[["preco_minimo", "preco_medio", "preco_maximo"]].to_numpy(), axis=1)
     df[["preco_minimo", "preco_medio", "preco_maximo"]] = precos
 
@@ -84,7 +69,6 @@ def limpar(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def criar_atributos(df: pd.DataFrame) -> pd.DataFrame:
-    """Engenharia de atributos usada nas análises e no dashboard."""
     df = df.copy()
     df["nome_uf"] = df["uf"].map(NOMES_UF).fillna(df["uf"])
     df["trimestre"] = df["data"].dt.quarter
@@ -100,8 +84,6 @@ def criar_atributos(df: pd.DataFrame) -> pd.DataFrame:
         ["Alta", "Queda"], "Estável",
     )
     df["variacao_abs"] = df["variacao_mensal"].abs()
-    # Faixa recalculada por quartis do próprio combustível: diferente da coluna
-    # original nivel_preco, que não acompanha o preço (ver notebook).
     df["faixa_preco"] = df.groupby("combustivel")["preco_medio"].transform(
         lambda s: pd.qcut(s, 4, labels=ORDEM_NIVEIS)
     ).astype(str)
@@ -115,12 +97,10 @@ def criar_atributos(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def preparar(origem=CAMINHO_CSV) -> pd.DataFrame:
-    """Pipeline completo: leitura → limpeza → engenharia de atributos."""
     return criar_atributos(limpar(carregar_bruto(origem)))
 
 
 def indicadores_mensais(df: pd.DataFrame) -> pd.DataFrame:
-    """Série mensal nacional: preço médio, inflação, petróleo e volatilidade."""
     m = df.groupby("data", observed=True).agg(
         preco_medio=("preco_medio", "mean"),
         inflacao=("inflacao", "mean"),
@@ -135,7 +115,6 @@ def indicadores_mensais(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def volatilidade_por(df: pd.DataFrame, coluna: str) -> pd.DataFrame:
-    """Desvio padrão, coeficiente de variação e amplitude por categoria."""
     g = df.groupby(coluna, observed=True)
     out = pd.DataFrame({
         "preco_medio": g["preco_medio"].mean(),
@@ -150,7 +129,6 @@ def volatilidade_por(df: pd.DataFrame, coluna: str) -> pd.DataFrame:
 
 
 def aumento_periodo(df: pd.DataFrame, coluna: str = "combustivel") -> pd.DataFrame:
-    """Variação % entre o preço médio do primeiro e do último ano filtrado."""
     anos = sorted(df["ano"].unique())
     if len(anos) < 2:
         return pd.DataFrame(columns=[coluna, "inicio", "fim", "aumento_pct"])
@@ -165,7 +143,6 @@ def aumento_periodo(df: pd.DataFrame, coluna: str = "combustivel") -> pd.DataFra
 
 
 def kpis(df: pd.DataFrame) -> dict:
-    """Os seis KPIs exigidos pelo enunciado do Tema 11."""
     if df.empty:
         return {}
     por_comb = df.groupby("combustivel", observed=True)["preco_medio"].mean()
@@ -188,7 +165,6 @@ def kpis(df: pd.DataFrame) -> dict:
 
 
 def fmt_brl(valor: float, casas: int = 2) -> str:
-    """Formata número no padrão brasileiro: R$ 1.234,56."""
     s = f"{valor:,.{casas}f}".replace(",", "X").replace(".", ",").replace("X", ".")
     return f"R$ {s}"
 
@@ -198,7 +174,6 @@ def fmt_num(valor: float, casas: int = 0) -> str:
 
 
 def fmt_compacto(valor: float) -> str:
-    """Número compacto: 561,2 mi / 12,3 mil."""
     for limite, sufixo in [(1e9, " bi"), (1e6, " mi"), (1e3, " mil")]:
         if abs(valor) >= limite:
             return fmt_num(valor / limite, 1) + sufixo

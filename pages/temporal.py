@@ -15,7 +15,6 @@ if df.empty:
     sem_dados()
     st.stop()
 
-# ------------------------------------------------------------ linha temporal
 secao("Linha temporal por combustível")
 granularidade = st.segmented_control("Granularidade", ["Mensal", "Trimestral", "Anual"],
                                      default="Trimestral", key="granularidade")
@@ -39,7 +38,6 @@ interpretacao(
     "granularidade, maior o ruído — típico de dados sem tendência."
 )
 
-# ------------------------------------------------------------ heatmap mensal (seaborn)
 c1, c2 = st.columns([3, 2])
 with c1:
     secao("Heatmap mensal do preço médio", "Ano × mês — Seaborn. Tons mais escuros = preço maior.")
@@ -72,7 +70,6 @@ interpretacao(
     "consistentes (o mesmo mês caro em vários anos), portanto <b>não há sazonalidade clara</b>."
 )
 
-# ------------------------------------------------------------ períodos críticos
 secao("Períodos de maior instabilidade",
       "Volatilidade = desvio padrão da variação mensal entre estados e combustíveis no mês.")
 m = indicadores_mensais(df)

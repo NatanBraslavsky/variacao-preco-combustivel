@@ -25,7 +25,6 @@ por_uf = (df.groupby(["uf", "nome_uf", "regiao"], observed=True)
                  variacao=("variacao_mensal", "mean"))
             .reset_index().sort_values("preco_medio", ascending=False))
 
-# ------------------------------------------------------------ mapa
 c1, c2 = st.columns([3, 2])
 with c1:
     secao("Mapa do preço médio por estado", "Estados em cinza não constam na base.")
@@ -69,7 +68,6 @@ interpretacao(
     "(amostragem desigual), o que torna suas médias mais estáveis."
 )
 
-# ------------------------------------------------------------ regiões
 c1, c2 = st.columns(2)
 with c1:
     secao("Distribuição dos preços por região", "Caixa = 50% centrais; linha = mediana.")

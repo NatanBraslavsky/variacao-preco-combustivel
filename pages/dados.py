@@ -14,7 +14,6 @@ cabecalho("Exploração detalhada", "Dados, tabela dinâmica e SQL",
 aba_pivot, aba_sql, aba_dados, aba_upload = st.tabs(
     ["Tabela dinâmica", "Consultas SQL", "Registros", "Enviar CSV"])
 
-# ------------------------------------------------------------ tabela dinâmica
 with aba_pivot:
     if df.empty:
         sem_dados()
@@ -51,7 +50,6 @@ with aba_pivot:
             st.download_button("Baixar tabela dinâmica (CSV)", pivot.to_csv(sep=";", decimal=","),
                                "tabela_dinamica.csv", "text/csv", icon=":material/download:")
 
-# ------------------------------------------------------------ SQL
 with aba_sql:
     st.caption("Consultas executadas diretamente no banco `database/combustiveis.db` "
                "(base completa, sem os filtros da barra lateral).")
@@ -70,7 +68,6 @@ with aba_sql:
         titulo="Modelagem relacional",
     )
 
-# ------------------------------------------------------------ registros
 with aba_dados:
     if df.empty:
         sem_dados()
@@ -83,7 +80,6 @@ with aba_dados:
                            df[colunas_vis].to_csv(index=False).encode("utf-8-sig"),
                            "combustiveis_filtrado.csv", "text/csv", icon=":material/download:")
 
-# ------------------------------------------------------------ upload
 with aba_upload:
     st.markdown("Envie um CSV com as mesmas 14 colunas da base original para analisá-lo em todo "
                 "o painel. O arquivo passa pelo mesmo tratamento (limpeza + atributos).")
@@ -99,7 +95,7 @@ with aba_upload:
                 st.session_state["df_upload"] = criar_atributos(limpar(bruto))
                 st.session_state["nome_upload"] = arquivo.name
                 st.rerun()
-        except Exception as erro:  # arquivo corrompido, encoding etc.
+        except Exception as erro:
             st.error(f"Não foi possível ler o arquivo: {erro}")
     if "df_upload" in st.session_state:
         st.success(f"Usando a base enviada: **{st.session_state['nome_upload']}** "

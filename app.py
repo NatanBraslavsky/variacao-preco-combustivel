@@ -1,10 +1,3 @@
-"""Dashboard — Variação dos Preços de Combustíveis no Brasil (2015–2024).
-
-Ponto de entrada do Streamlit. Carrega a base (CSV → SQLite), monta os filtros
-compartilhados na barra lateral e despacha para as páginas em pages/.
-
-Execução local:  streamlit run app.py
-"""
 from __future__ import annotations
 
 import pandas as pd
@@ -51,7 +44,6 @@ ipca, origem_ipca = carregar_ipca()
 st.session_state.update(df_base=base, ipca=ipca, origem_ipca=origem_ipca,
                         engine=carregar_engine(), fonte=fonte)
 
-# ---------------------------------------------------------------- filtros
 FILTROS = ["f_anos", "f_meses", "f_regioes", "f_ufs", "f_combustiveis", "f_niveis"]
 
 
@@ -98,7 +90,6 @@ with st.sidebar:
     st.caption(f"**{len(df):,}** de {len(base):,} registros selecionados".replace(",", "."))
     st.caption(f"Base: `{fonte}`  \nIPCA: {origem_ipca}")
 
-# ---------------------------------------------------------------- navegação
 paginas = {
     "Painel": [
         st.Page("pages/visao_geral.py", title="Visão geral", icon=":material/dashboard:", default=True),

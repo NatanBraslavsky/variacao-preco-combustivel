@@ -1,9 +1,3 @@
-"""Consumo da API de Séries Temporais (SGS) do Banco Central do Brasil.
-
-Série 13522 — IPCA acumulado em 12 meses (%). Serve de referência real para
-comparar com a coluna `inflacao` da base simulada. Se a API estiver fora do
-ar, usamos a cópia local salva em dados/ipca_bcb_12m.csv.
-"""
 from __future__ import annotations
 
 import pandas as pd
@@ -31,7 +25,6 @@ def buscar_ipca_api(inicio: str = "01/01/2015", fim: str = "31/12/2024",
 
 
 def obter_ipca() -> tuple[pd.DataFrame, str]:
-    """Retorna (série, origem). Atualiza o cache local quando a API responde."""
     try:
         df = buscar_ipca_api()
         df.to_csv(CAMINHO_CACHE, index=False)

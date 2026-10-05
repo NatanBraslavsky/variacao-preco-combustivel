@@ -64,7 +64,6 @@ interpretacao(
     "por isso ele muda bastante conforme os filtros."
 )
 
-# ------------------------------------------------------------ volatilidade
 secao("Volatilidade", "Quanto o preço oscila de um mês para o outro.")
 c1, c2 = st.columns([2, 3])
 with c1:

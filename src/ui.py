@@ -1,4 +1,3 @@
-"""Componentes visuais do dashboard (estilo inspirado no Apple HIG)."""
 from __future__ import annotations
 
 import html
@@ -6,8 +5,6 @@ import html
 import plotly.graph_objects as go
 import streamlit as st
 
-# Paleta categórica validada (skill dataviz). A cor segue a entidade, nunca a
-# posição no ranking — filtrar combustíveis não repinta os que sobram.
 CORES_COMBUSTIVEL = {
     "Gasolina": "#2a78d6", "Etanol": "#eb6834", "Diesel": "#1baf7a",
     "GNV": "#eda100", "GLP": "#e87ba4",
@@ -88,7 +85,6 @@ def secao(titulo: str, sub: str = "") -> None:
 
 
 def cartoes_kpi(itens: list[tuple[str, str, str]]) -> None:
-    """itens = [(rótulo, valor, nota)]"""
     cards = "".join(
         f'<div class="kpi"><div class="kpi-label">{html.escape(r)}</div>'
         f'<div class="kpi-value">{html.escape(v)}</div>'
@@ -106,7 +102,6 @@ def interpretacao(texto: str, titulo: str = "Interpretação", aviso: bool = Fal
 
 def layout_grafico(fig: go.Figure, altura: int = 380, titulo_y: str | None = None,
                    titulo_x: str | None = None, legenda: bool = True) -> go.Figure:
-    """Padrão visual: grade discreta, sem bordas, legenda no topo, hover unificado."""
     fig.update_layout(
         height=altura, margin=dict(l=8, r=8, t=36, b=8),
         font=dict(family="-apple-system, BlinkMacSystemFont, Segoe UI, system-ui, sans-serif", size=13),

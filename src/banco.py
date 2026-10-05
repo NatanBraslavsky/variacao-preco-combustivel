@@ -1,10 +1,3 @@
-"""Persistência em SQLite com modelagem relacional via SQLAlchemy.
-
-Modelo (3ª forma normal):
-
-    regioes 1──N ufs 1──N precos N──1 combustiveis
-    indicadores_bcb (série externa do Banco Central, ligada por data)
-"""
 from __future__ import annotations
 
 from datetime import date
@@ -82,7 +75,6 @@ def obter_engine(caminho: Path = CAMINHO_DB) -> Engine:
 
 def construir_banco(df: pd.DataFrame, engine: Engine,
                     ipca: pd.DataFrame | None = None) -> None:
-    """(Re)cria o esquema e carrega a base tratada nas tabelas normalizadas."""
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     with Session(engine) as s:
@@ -119,7 +111,6 @@ def contar_registros(engine: Engine) -> dict:
                 for t in (Regiao, UF, Combustivel, Preco, IndicadorBCB)}
 
 
-# Consultas SQL exibidas no dashboard (página Dados & SQL) e no notebook.
 CONSULTAS = {
     "Ranking de estados por preço médio": """
         SELECT u.sigla AS uf, u.nome AS estado, r.nome AS regiao,

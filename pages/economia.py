@@ -59,7 +59,6 @@ interpretacao(
     "<b>nesta base, nem inflação nem petróleo explicam o preço dos combustíveis.</b>"
 )
 
-# ------------------------------------------------------------ matriz de correlação
 c1, c2 = st.columns([1, 1])
 with c1:
     secao("Matriz de correlação", "Seaborn · registros individuais.")
@@ -68,7 +67,6 @@ with c1:
     cols = {"preco_medio": "Preço", "variacao_mensal": "Variação", "inflacao": "Inflação",
             "cotacao_petroleo": "Petróleo", "consumo_estimado": "Consumo", "amplitude": "Amplitude"}
     base_corr = df[list(cols)].rename(columns=cols)
-    # Spearman = Pearson sobre os postos (evita depender do scipy)
     corr = (base_corr.rank() if metodo == "spearman" else base_corr).corr()
     fig_c, ax = plt.subplots(figsize=(6, 4.8))
     mascara = np.triu(np.ones_like(corr, dtype=bool), k=1)
@@ -109,7 +107,6 @@ interpretacao(
     "então não há relação não linear escondida."
 )
 
-# ------------------------------------------------------------ IPCA real (API BCB)
 secao("Inflação simulada × IPCA real (API do Banco Central)",
       f"Série SGS 13522 — IPCA acumulado em 12 meses. Fonte: {st.session_state['origem_ipca']}.")
 if ipca.empty:
