@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Combustíveis no Brasil · Projeto G1</title>
+<meta name="description" content="Análise e visualização da variação dos preços de combustíveis no Brasil entre 2015 e 2024 com Python, Pandas, Seaborn e Streamlit.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230071e3'/%3E%3Cpath d='M10 24V9a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15M8 24h14M10 14h10M20 12l3 2v7a1.5 1.5 0 0 0 3 0v-8l-3-3' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #fbfbfd; --bg-alt: #f5f5f7; --surface: #ffffff;
+  --ink-1: #1d1d1f; --ink-2: #6e6e73; --ink-3: #86868b;
+  --hair: rgba(0,0,0,.08); --hair-strong: rgba(0,0,0,.14);
+  --accent: #0071e3; --accent-ink: #0066cc; --accent-soft: rgba(0,113,227,.08);
+  --warm: #c2410c; --warm-soft: rgba(235,104,52,.10);
+  --nav: rgba(251,251,253,.72);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04), 0 4px 14px rgba(0,0,0,.04);
+  --shadow-lg: 0 2px 6px rgba(0,0,0,.05), 0 22px 48px rgba(0,0,0,.09);
+  --radius: 22px; --radius-sm: 14px;
+  --ease: cubic-bezier(.22,1,.36,1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --bg-alt: #0b0b0c; --surface: #161617;
+    --ink-1: #f5f5f7; --ink-2: #a1a1a6; --ink-3: #86868b;
+    --hair: rgba(255,255,255,.10); --hair-strong: rgba(255,255,255,.18);
+    --accent: #0a84ff; --accent-ink: #2997ff; --accent-soft: rgba(41,151,255,.12);
+    --warm: #ff9f0a; --warm-soft: rgba(255,159,10,.12);
+    --nav: rgba(22,22,23,.72);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 22px 48px rgba(0,0,0,.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --bg-alt: #0b0b0c; --surface: #161617;
+  --ink-1: #f5f5f7; --ink-2: #a1a1a6; --ink-3: #86868b;
+  --hair: rgba(255,255,255,.10); --hair-strong: rgba(255,255,255,.18);
+  --accent: #0a84ff; --accent-ink: #2997ff; --accent-soft: rgba(41,151,255,.12);
+  --warm: #ff9f0a; --warm-soft: rgba(255,159,10,.12);
+  --nav: rgba(22,22,23,.72);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 22px 48px rgba(0,0,0,.5);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink-1);
+  font: 400 1.0625rem/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.icon { width: 1.1em; height: 1.1em; flex: none; stroke: currentColor; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.wrap { width: min(1120px, 100% - 32px); margin-inline: auto; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 8px 14px;
+  border-radius: 10px; z-index: 100; }
+.skip:focus { left: 16px; }
+
+/* ---------- nav (material translúcido) */
+.nav { position: sticky; top: 0; z-index: 50; background: var(--nav);
+  backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--hair); }
+.nav .wrap { display: flex; align-items: center; gap: 24px; height: 52px; }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: .95rem;
+  color: var(--ink-1); letter-spacing: -.01em; }
+.brand:hover { text-decoration: none; }
+.brand-mark { width: 26px; height: 26px; border-radius: 7px; background: var(--accent);
+  display: grid; place-items: center; color: #fff; }
+.brand-mark .icon { width: 15px; height: 15px; }
+.nav-links { display: flex; gap: 22px; margin-left: auto; font-size: .82rem; }
+.nav-links a { color: var(--ink-2); padding: 14px 0; }
+.nav-links a:hover { color: var(--ink-1); text-decoration: none; }
+.nav-cta { font-size: .8rem; padding: 6px 14px !important; }
+@media (max-width: 760px) { .nav-links { display: none; } .nav-cta { margin-left: auto; } }
+
+/* ---------- botões */
+.btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 22px;
+  border-radius: 980px; font-size: 1rem; font-weight: 500; border: 1px solid transparent;
+  cursor: pointer; transition: transform 120ms ease-out, background-color 160ms ease-out, box-shadow 160ms;
+  touch-action: manipulation; }
+.btn:hover { text-decoration: none; }
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: color-mix(in srgb, var(--accent) 88%, #000); }
+.btn-ghost { color: var(--accent-ink); border-color: var(--hair-strong); background: transparent; }
+.btn-ghost:hover { background: var(--accent-soft); }
+.btn-sm { min-height: 32px; padding: 6px 14px; font-size: .82rem; }
+
+/* ---------- hero */
+.hero { padding: clamp(56px, 10vw, 120px) 0 40px; text-align: center; overflow: hidden; }
+.eyebrow { font-size: .82rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--warm); margin: 0 0 14px; }
+.hero h1 { font-size: clamp(2.5rem, 7vw, 5rem); line-height: 1.04; letter-spacing: -.035em;
+  font-weight: 700; margin: 0 auto 20px; max-width: 14ch; }
+.hero h1 .grad { background: linear-gradient(100deg, #0071e3 10%, #eb6834 90%);
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lead { font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.5; color: var(--ink-2);
+  max-width: 40em; margin: 0 auto 32px; letter-spacing: -.005em; }
+.actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.hero-figure { margin: 56px auto 0; max-width: 1040px; background: var(--surface);
+  border: 1px solid var(--hair); border-radius: var(--radius); padding: clamp(10px, 2vw, 22px);
+  box-shadow: var(--shadow-lg); }
+.hero-figure img { border-radius: 12px; background: #fff; }
+.hero-figure figcaption { font-size: .82rem; color: var(--ink-3); margin-top: 10px; }
+
+/* ---------- seções */
+section { padding: clamp(64px, 9vw, 112px) 0; }
+.alt { background: var(--bg-alt); }
+.section-head { max-width: 46em; margin-bottom: 44px; }
+.section-head h2 { font-size: clamp(2rem, 4.4vw, 3rem); line-height: 1.08; letter-spacing: -.03em;
+  margin: 0 0 14px; font-weight: 700; }
+.section-head p { font-size: 1.15rem; color: var(--ink-2); margin: 0; }
+.center { text-align: center; margin-inline: auto; }
+
+/* ---------- KPIs */
+.kpis { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.kpi { background: var(--surface); border: 1px solid var(--hair); border-radius: var(--radius-sm);
+  padding: 20px; box-shadow: var(--shadow-sm); }
+.kpi-label { font-size: .8rem; color: var(--ink-2); font-weight: 500; }
+.kpi-value { font-size: 1.85rem; font-weight: 700; letter-spacing: -.025em; line-height: 1.15; margin: 6px 0 2px; }
+.kpi-note { font-size: .8rem; color: var(--ink-3); }
+
+/* ---------- cards genéricos */
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.g3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--hair); border-radius: var(--radius);
+  padding: 26px; box-shadow: var(--shadow-sm); }
+.card h3 { font-size: 1.15rem; letter-spacing: -.015em; margin: 0 0 8px; line-height: 1.3; }
+.card p { margin: 0; color: var(--ink-2); font-size: .98rem; }
+.num { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent-soft); color: var(--accent-ink); font-weight: 700; font-size: .85rem;
+  margin-bottom: 14px; }
+.answer { margin-top: 12px !important; padding-top: 12px; border-top: 1px solid var(--hair);
+  color: var(--ink-1) !important; }
+
+/* ---------- tratamento */
+.finding-value { font-size: 2.6rem; font-weight: 700; letter-spacing: -.035em; line-height: 1;
+  color: var(--warm); margin-bottom: 10px; }
+.split { display: grid; gap: 28px; grid-template-columns: 1fr; align-items: center; margin-top: 28px; }
+@media (min-width: 900px) { .split { grid-template-columns: 1fr 1.35fr; } }
+.split ul { margin: 0; padding-left: 1.1em; color: var(--ink-2); }
+.split li { margin-bottom: 8px; }
+.split li b { color: var(--ink-1); }
+
+/* ---------- galeria */
+.gallery { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); }
+.shot { margin: 0; background: var(--surface); border: 1px solid var(--hair); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.shot button { all: unset; cursor: zoom-in; display: block; background: #fff; padding: 12px; }
+.shot button:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.shot img { transition: transform 300ms var(--ease); }
+.shot button:hover img { transform: scale(1.015); }
+.shot figcaption { padding: 16px 20px 20px; border-top: 1px solid var(--hair); }
+.shot figcaption b { display: block; font-size: 1rem; margin-bottom: 4px; letter-spacing: -.01em; }
+.shot figcaption span { font-size: .9rem; color: var(--ink-2); }
+.wide { grid-column: 1 / -1; }
+
+dialog { border: 0; padding: 0; background: transparent; max-width: min(1200px, 96vw); width: 100%; }
+dialog::backdrop { background: rgba(0,0,0,.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+dialog[open] { animation: pop 260ms var(--ease); }
+@keyframes pop { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+.lb-inner { background: var(--surface); border-radius: var(--radius); overflow: hidden; position: relative; }
+.lb-inner img { background: #fff; width: 100%; padding: 16px; }
+.lb-inner p { margin: 0; padding: 14px 20px 18px; color: var(--ink-2); font-size: .95rem; }
+.lb-close { position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%;
+  border: 0; cursor: pointer; display: grid; place-items: center; color: #1d1d1f;
+  background: rgba(245,245,247,.85); backdrop-filter: blur(10px); }
+
+/* ---------- dashboard */
+.pages { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 8px 0 32px; }
+.page { display: flex; gap: 14px; align-items: flex-start; padding: 18px; border-radius: var(--radius-sm);
+  background: var(--surface); border: 1px solid var(--hair); }
+.page .ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent-ink); flex: none; }
+.page b { display: block; font-size: .98rem; letter-spacing: -.01em; }
+.page span { font-size: .87rem; color: var(--ink-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: .85rem; padding: 6px 14px; border-radius: 980px; background: var(--surface);
+  border: 1px solid var(--hair); color: var(--ink-1); }
+.chip.on { background: var(--accent-soft); border-color: transparent; color: var(--accent-ink); font-weight: 500; }
+
+/* ---------- arquitetura */
+.flow { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); counter-reset: s; }
+.step { position: relative; padding: 20px 18px; border-radius: var(--radius-sm); background: var(--surface);
+  border: 1px solid var(--hair); }
+.step::before { counter-increment: s; content: "0" counter(s); font-size: .75rem; font-weight: 700;
+  color: var(--warm); letter-spacing: .05em; }
+.step b { display: block; margin: 6px 0 4px; letter-spacing: -.01em; }
+.step span { font-size: .87rem; color: var(--ink-2); }
+.step code { font-size: .8rem; }
+
+/* ---------- tecnologias */
+.tech { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.tech div { padding: 18px; border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--hair); }
+.tech b { display: block; letter-spacing: -.01em; }
+.tech span { font-size: .85rem; color: var(--ink-2); }
+
+/* ---------- arquivos */
+.file { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border-radius: var(--radius-sm);
+  background: var(--surface); border: 1px solid var(--hair); color: var(--ink-1);
+  transition: transform 160ms ease-out, box-shadow 160ms ease-out; min-height: 44px; }
+.file:hover { text-decoration: none; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.file:active { transform: scale(.98); }
+.file .ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent-ink); flex: none; }
+.file b { display: block; font-size: .98rem; }
+.file span { font-size: .85rem; color: var(--ink-2); }
+.file .go { margin-left: auto; color: var(--ink-3); }
+
+/* ---------- conclusão / footer */
+.conclusion { font-size: clamp(1.25rem, 2.6vw, 1.7rem); line-height: 1.4; letter-spacing: -.015em;
+  max-width: 34em; margin: 0 auto 36px; text-align: center; }
+.conclusion em { font-style: normal; color: var(--warm); }
+.note { background: var(--warm-soft); border-radius: var(--radius-sm); padding: 18px 22px; color: var(--ink-1);
+  font-size: .95rem; max-width: 52em; margin: 0 auto; }
+footer { border-top: 1px solid var(--hair); padding: 28px 0 40px; font-size: .82rem; color: var(--ink-3); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
+footer a { color: var(--ink-2); }
+
+/* ---------- entrada suave (só com JS e sem movimento reduzido) */
+.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
+.js .reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  *, *::before, *::after { animation: none !important; transition-duration: 0ms !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .nav { background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-fuel" viewBox="0 0 24 24"><path d="M3 22V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17"/><path d="M2 22h14"/><path d="M3 11h12"/><path d="M15 9l3 2v7a2 2 0 0 0 4 0V9l-4-4"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+  <symbol id="i-dash" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-time" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M14.1 6.3 9.9 4.2a2 2 0 0 0-1.8 0L3.6 6.4A1 1 0 0 0 3 7.3v12.1a1 1 0 0 0 1.4.9l3.7-1.8a2 2 0 0 1 1.8 0l4.2 2.1a2 2 0 0 0 1.8 0l4.5-2.2a1 1 0 0 0 .6-.9V5.4a1 1 0 0 0-1.4-.9l-3.7 1.8a2 2 0 0 1-1.8 0z"/><path d="M15 5.8v15"/><path d="M9 3.2v15"/></symbol>
+  <symbol id="i-sigma" viewBox="0 0 24 24"><circle cx="7.5" cy="7.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/><circle cx="16" cy="8" r="1.5"/><circle cx="9" cy="15" r="1.5"/><path d="M3 21 21 3"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+</svg>
+
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+<nav class="nav" aria-label="Principal">
+  <div class="wrap">
+    <a class="brand" href="#topo"><span class="brand-mark"><svg class="icon"><use href="#i-fuel"/></svg></span>Combustíveis BR</a>
+    <div class="nav-links">
+      <a href="#sobre">Sobre</a>
+      <a href="#tratamento">Tratamento</a>
+      <a href="#analises">Análises</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#arquivos">Arquivos</a>
+    </div>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://variacao-preco-combustivel.streamlit.app" target="_blank" rel="noopener">Abrir dashboard</a>
+  </div>
+</nav>
+
+<main id="conteudo">
+<header class="hero" id="topo">
+  <div class="wrap">
+    <p class="eyebrow">Projeto G1 · Análise e Visualização de Dados com Python</p>
+    <h1>Variação dos preços de <span class="grad">combustíveis</span> no Brasil.</h1>
+    <p class="lead">Dez anos de preços de gasolina, etanol, diesel, GNV e GLP em 20 estados,
+      investigados com Pandas, Seaborn e Streamlit — e cruzados com o IPCA real do Banco Central.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://variacao-preco-combustivel.streamlit.app" target="_blank" rel="noopener">
+        <svg class="icon"><use href="#i-dash"/></svg>Abrir dashboard</a>
+      <a class="btn btn-ghost" href="https://github.com/NatanBraslavsky/variacao-preco-combustivel" target="_blank" rel="noopener">
+        <svg class="icon"><use href="#i-github"/></svg>Ver no GitHub</a>
+    </div>
+    <figure class="hero-figure reveal">
+      <img src="imagens/01_evolucao_temporal.png" width="1775" height="606" alt="Gráfico de linha do preço médio nacional mensal de 2015 a 2024, oscilando entre R$ 5,00 e R$ 6,05, com média móvel de 12 meses praticamente plana em torno de R$ 5,50.">
+      <figcaption>Preço médio nacional mensal e média móvel de 12 meses, 2015–2024.</figcaption>
+    </figure>
+  </div>
+</header>
+
+<!-- KPIs -->
+<section class="alt" aria-labelledby="kpi-t">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2 id="kpi-t">Os números do período.</h2>
+      <p>Os seis indicadores exigidos pelo projeto, calculados sobre a base tratada (3.937 registros).</p>
+    </div>
+    <div class="kpis reveal">
+      <div class="kpi"><div class="kpi-label">Preço médio nacional</div><div class="kpi-value">R$ 5,51</div><div class="kpi-note">média geral 2015–2024</div></div>
+      <div class="kpi"><div class="kpi-label">Combustível mais caro</div><div class="kpi-value">GLP</div><div class="kpi-note">R$ 5,57 em média</div></div>
+      <div class="kpi"><div class="kpi-label">Estado com maior preço</div><div class="kpi-value">Ceará</div><div class="kpi-note">R$ 5,66 em média</div></div>
+      <div class="kpi"><div class="kpi-label">Maior variação mensal</div><div class="kpi-value">−15,6%</div><div class="kpi-note">Gasolina · MS · 06/2023</div></div>
+      <div class="kpi"><div class="kpi-label">Consumo estimado total</div><div class="kpi-value">497,2 mi</div><div class="kpi-note">unidades no período</div></div>
+      <div class="kpi"><div class="kpi-label">Região mais cara</div><div class="kpi-value">Nordeste</div><div class="kpi-note">R$ 5,58 em média</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Sobre + perguntas -->
+<section id="sobre" aria-labelledby="sobre-t">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2 id="sobre-t">Sete perguntas. Respostas honestas.</h2>
+      <p>Combustíveis afetam transporte, logística, inflação e custo de vida. O projeto parte de uma base
+        simulada com 4.440 registros mensais (2015–2024) e responde às perguntas orientadoras do tema.</p>
+    </div>
+    <div class="grid g3">
+      <article class="card reveal"><span class="num">1</span><h3>Quais estados têm combustíveis mais caros?</h3>
+        <p class="answer">Ceará, Rio Grande do Sul e Santa Catarina — mas só ~6% acima do mais barato (Pará).</p></article>
+      <article class="card reveal"><span class="num">2</span><h3>Qual combustível teve maior aumento?</h3>
+        <p class="answer">Gasolina e etanol, cerca de +5% entre 2015 e 2024. O diesel foi o único a cair (−2,2%).</p></article>
+      <article class="card reveal"><span class="num">3</span><h3>Existem diferenças regionais relevantes?</h3>
+        <p class="answer">Não. O Nordeste é a região mais cara, mas a variação dentro de cada região é oito vezes maior que entre regiões.</p></article>
+      <article class="card reveal"><span class="num">4</span><h3>Há períodos de maior instabilidade?</h3>
+        <p class="answer">Em meses isolados (mar/2015, nov/2022, set/2019, jul/2024), espalhados pela década, sem crise prolongada.</p></article>
+      <article class="card reveal"><span class="num">5</span><h3>Como os preços evoluíram?</h3>
+        <p class="answer">De forma estável em torno de R$ 5,50: muito ruído mês a mês, nenhuma tendência ou sazonalidade.</p></article>
+      <article class="card reveal"><span class="num">6</span><h3>Existe relação com a inflação?</h3>
+        <p class="answer">Não nesta base: correlação de −0,01 com a inflação e de 0,01 com o petróleo — indistinguíveis de zero.</p></article>
+      <article class="card reveal"><span class="num">7</span><h3>Quais combustíveis são mais voláteis?</h3>
+        <p class="answer">GNV e etanol lideram por pouco. Todos oscilam cerca de ±4 pontos percentuais por mês.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- Tratamento -->
+<section class="alt" id="tratamento" aria-labelledby="trat-t">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2 id="trat-t">Antes dos gráficos, a limpeza.</h2>
+      <p>A base não tem valores nulos, mas esconde problemas de qualidade. Cada um foi documentado e tratado no notebook.</p>
+    </div>
+    <div class="grid g3">
+      <div class="card reveal"><div class="finding-value">503</div><h3>Duplicatas de chave</h3>
+        <p>O mesmo mês, estado e combustível aparecem repetidos com valores diferentes. Consolidados pela média: 4.440 → 3.937 registros.</p></div>
+      <div class="card reveal"><div class="finding-value">37 de 100</div><h3>Amostragem incompleta</h3>
+        <p>Cada mês cobre só 37 das 100 combinações estado × combustível, e alguns estados têm o dobro de registros.</p></div>
+      <div class="card reveal"><div class="finding-value">37×</div><h3>Indicadores inconsistentes</h3>
+        <p>Inflação e petróleo deveriam ser únicos por mês, mas têm 37 valores distintos. Usamos a média mensal.</p></div>
+    </div>
+    <div class="split reveal">
+      <div>
+        <h3 style="font-size:1.5rem;letter-spacing:-.02em;margin:0 0 12px">O nível de preço não acompanhava o preço.</h3>
+        <ul>
+          <li>A coluna <b>nivel_preco</b> cobre de R$ 3 a R$ 8 em todas as classes — o "Crítico" tem média menor que o "Alto".</li>
+          <li>Criamos a <b>faixa recalculada</b> por quartis de cada combustível, coerente com o preço.</li>
+          <li>Outros atributos: amplitude, direção da variação, trimestre, z-score e nome do estado.</li>
+        </ul>
+      </div>
+      <figure class="shot">
+        <button type="button" data-full="imagens/11_nivel_preco.png" data-caption="Boxplots: a coluna original nivel_preco não separa os preços; a faixa recalculada por quartis separa claramente." aria-label="Ampliar gráfico de nível de preço">
+          <img src="imagens/11_nivel_preco.png" width="1775" height="606" loading="lazy" alt="Dois boxplots lado a lado. À esquerda, as quatro classes originais de nivel_preco têm distribuições idênticas de R$ 3 a R$ 8. À direita, as faixas recalculadas por quartis crescem de forma ordenada.">
+        </button>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- Galeria -->
+<section id="analises" aria-labelledby="an-t">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2 id="an-t">O que os dados mostram.</h2>
+      <p>Gráficos gerados no notebook com Matplotlib e Seaborn. Toque em um gráfico para ampliar.</p>
+    </div>
+    <div class="gallery">
+      <figure class="shot reveal">
+        <button type="button" data-full="imagens/02_linha_combustiveis.png" data-caption="Preço médio anual por combustível: as linhas se cruzam o tempo todo." aria-label="Ampliar: preço anual por combustível">
+          <img src="imagens/02_linha_combustiveis.png" width="1775" height="606" loading="lazy" alt="Linhas do preço médio anual de cada combustível entre 2015 e 2024, entrelaçadas entre R$ 5,30 e R$ 5,80."></button>
+        <figcaption><b>Linha temporal por combustível</b><span>Nenhum combustível é sistematicamente mais caro.</span></figcaption>
+      </figure>
+      <figure class="shot reveal">
+        <button type="button" data-full="imagens/05_heatmap_mensal.png" data-caption="Heatmap ano × mês do preço médio: sem faixas sazonais." aria-label="Ampliar: heatmap mensal">
+          <img src="imagens/05_heatmap_mensal.png" width="1633" height="725" loading="lazy" alt="Heatmap com anos nas linhas e meses nas colunas; tons de azul distribuídos sem padrão."></button>
+        <figcaption><b>Heatmap mensal</b><span>Sem sazonalidade: nenhum mês é caro de forma recorrente.</span></figcaption>
+      </figure>
+      <figure class="shot reveal">
+        <button type="button" data-full="imagens/03_barras_estados.png" data-caption="Preço médio por estado; os três mais caros em laranja." aria-label="Ampliar: barras por estado">
+          <img src="imagens/03_barras_estados.png" width="1775" height="666" loading="lazy" alt="Barras do preço médio dos 20 estados em ordem decrescente; Ceará, Rio Grande do Sul e Santa Catarina destacados."></button>
+        <figcaption><b>Comparação estadual</b><span>CE, RS e SC lideram — com diferença de apenas ~6% para o último.</span></figcaption>
+      </figure>
+      <figure class="shot reveal">
+        <button type="button" data-full="imagens/04_barras_combustivel.png" data-caption="Preço médio ± desvio padrão e aumento acumulado 2015→2024 por combustível." aria-label="Ampliar: barras por combustível">
+          <img src="imagens/04_barras_combustivel.png" width="1775" height="606" loading="lazy" alt="À esquerda, barras de preço médio quase iguais para os cinco combustíveis; à direita, aumento acumulado de +5% para gasolina a −2,2% para diesel."></button>
+        <figcaption><b>Comparação energética</b><span>Gasolina e etanol subiram ~5%; diesel caiu.</span></figcaption>
+      </figure>
+      <figure class="shot reveal">
+        <button type="button" data-full="imagens/06_dispersao_inflacao.png" data-caption="Dispersão inflação × preço e petróleo × preço, com reta de tendência praticamente horizontal." aria-label="Ampliar: dispersão inflação e petróleo">
+          <img src="imagens/06_dispersao_inflacao.png" width="1775" height="634" loading="lazy" alt="Duas nuvens de pontos retangulares e uniformes com reta de tendência horizontal; correlação próxima de zero."></button>
+        <figcaption><b>Dispersão inflação × preço</b><span>Correlação ≈ 0 com inflação e com petróleo.</span></figcaption>
+      </figure>
+      <figure class="shot reveal">
+        <button type="button" data-full="imagens/07_matriz_correlacao.png" data-caption="Matriz de correlação de Pearson entre as variáveis numéricas." aria-label="Ampliar: matriz de correlação">
+          <img src="imagens/07_matriz_correlacao.png" width="927" height="800" loading="lazy" alt="Matriz de correlação triangular; quase todas as células próximas de zero, exceto preço × amplitude."></button>
+        <figcaption><b>Matriz de correlação</b><span>Só preço × amplitude é forte — e por construção.</span></figcaption>
+      </figure>
+      <figure class="shot reveal wide">
+        <button type="button" data-full="imagens/08_ipca_real_vs_simulado.png" data-caption="IPCA real acumulado em 12 meses (API do Banco Central) comparado com a inflação da base simulada." aria-label="Ampliar: IPCA real versus simulado">
+          <img src="imagens/08_ipca_real_vs_simulado.png" width="1775" height="576" loading="lazy" alt="Linha laranja do IPCA real com picos em 2016 (10,7%) e 2022 (12,1%), e linha azul da inflação simulada oscilando em torno de 7% sem padrão."></button>
+        <figcaption><b>Integração com a API do Banco Central</b><span>O IPCA real mostra os ciclos de 2016 e 2022; a inflação simulada é ruído em torno de 7%.</span></figcaption>
+      </figure>
+      <figure class="shot reveal">
+        <button type="button" data-full="imagens/09_volatilidade.png" data-caption="Distribuição da variação mensal por combustível (violinos)." aria-label="Ampliar: volatilidade">
+          <img src="imagens/09_volatilidade.png" width="1774" height="605" loading="lazy" alt="Cinco violinos simétricos e praticamente idênticos centrados em zero, de −15% a +15%."></button>
+        <figcaption><b>Volatilidade</b><span>Alta, mas igual para todos os combustíveis.</span></figcaption>
+      </figure>
+      <figure class="shot reveal">
+        <button type="button" data-full="imagens/12_periodos_criticos.png" data-caption="Volatilidade mensal; em laranja, os 10% meses mais instáveis." aria-label="Ampliar: períodos críticos">
+          <img src="imagens/12_periodos_criticos.png" width="1776" height="546" loading="lazy" alt="Barras mensais de volatilidade de 2015 a 2024, com os meses mais instáveis em laranja espalhados pela década."></button>
+        <figcaption><b>Períodos críticos</b><span>Picos isolados, sem crise prolongada.</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard -->
+<section class="alt" id="dashboard" aria-labelledby="dash-t">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2 id="dash-t">Explore você mesmo.</h2>
+      <p>Dashboard Streamlit multipágina com seis filtros compartilhados. KPIs, gráficos e textos de interpretação se recalculam a cada seleção.</p>
+    </div>
+    <div class="pages reveal">
+      <div class="page"><span class="ic"><svg class="icon"><use href="#i-dash"/></svg></span><div><b>Visão geral</b><span>KPIs, evolução nacional e conclusão executiva</span></div></div>
+      <div class="page"><span class="ic"><svg class="icon"><use href="#i-time"/></svg></span><div><b>Evolução temporal</b><span>Linha por combustível, heatmap, sazonalidade e instabilidade</span></div></div>
+      <div class="page"><span class="ic"><svg class="icon"><use href="#i-map"/></svg></span><div><b>Regiões e estados</b><span>Mapa interativo, ranking e região × combustível</span></div></div>
+      <div class="page"><span class="ic"><svg class="icon"><use href="#i-fuel"/></svg></span><div><b>Combustíveis</b><span>Preço, aumento acumulado e volatilidade</span></div></div>
+      <div class="page"><span class="ic"><svg class="icon"><use href="#i-sigma"/></svg></span><div><b>Inflação e petróleo</b><span>Dispersões, correlação e IPCA real via API</span></div></div>
+      <div class="page"><span class="ic"><svg class="icon"><use href="#i-table"/></svg></span><div><b>Dados e SQL</b><span>Tabela dinâmica, consultas SQLAlchemy e upload de CSV</span></div></div>
+      <div class="page"><span class="ic"><svg class="icon"><use href="#i-check"/></svg></span><div><b>Conclusões</b><span>As sete perguntas respondidas para o recorte atual</span></div></div>
+    </div>
+    <div class="reveal" style="display:flex;flex-wrap:wrap;gap:28px;align-items:center;justify-content:space-between">
+      <div class="chips" aria-label="Filtros disponíveis">
+        <span class="chip on">Ano</span><span class="chip on">Mês</span><span class="chip on">Região</span>
+        <span class="chip on">Estado</span><span class="chip on">Combustível</span><span class="chip on">Nível de preço</span>
+      </div>
+      <a class="btn btn-primary" href="https://variacao-preco-combustivel.streamlit.app" target="_blank" rel="noopener">
+        Abrir dashboard<svg class="icon"><use href="#i-arrow"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- Arquitetura + tecnologias -->
+<section aria-labelledby="arq-t">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2 id="arq-t">Como foi construído.</h2>
+      <p>Um pipeline único em <code>src/</code> alimenta o notebook e o dashboard: tudo parte do mesmo tratamento.</p>
+    </div>
+    <div class="flow reveal">
+      <div class="step"><b>Leitura</b><span>CSV UTF-8 com BOM e validação das 14 colunas</span></div>
+      <div class="step"><b>Limpeza</b><span>Duplicatas, tipos, ordem mín ≤ médio ≤ máx</span></div>
+      <div class="step"><b>Atributos</b><span>Faixa por quartis, amplitude, z-score, recortes temporais</span></div>
+      <div class="step"><b>API BCB</b><span>IPCA 12 meses via <code>requests</code>, com cópia local</span></div>
+      <div class="step"><b>SQLite</b><span>Modelo relacional com SQLAlchemy (5 tabelas)</span></div>
+      <div class="step"><b>Visualização</b><span>Notebook (Seaborn) e dashboard (Streamlit + Plotly)</span></div>
+    </div>
+    <div class="section-head reveal" style="margin-top:72px">
+      <h2 style="font-size:clamp(1.6rem,3vw,2.1rem)">Tecnologias.</h2>
+    </div>
+    <div class="tech reveal">
+      <div><b>Python 3.12</b><span>Linguagem base</span></div>
+      <div><b>Pandas · NumPy</b><span>Tratamento, KPIs e correlação</span></div>
+      <div><b>Matplotlib · Seaborn</b><span>Gráficos estáticos e heatmaps</span></div>
+      <div><b>Streamlit</b><span>Dashboard multipágina</span></div>
+      <div><b>Plotly</b><span>Gráficos interativos e mapa</span></div>
+      <div><b>SQLAlchemy · SQLite</b><span>Persistência e modelagem</span></div>
+      <div><b>Requests</b><span>API do Banco Central</span></div>
+      <div><b>GitHub · Pages</b><span>Código e publicação</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Arquivos -->
+<section class="alt" id="arquivos" aria-labelledby="arq2-t">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2 id="arq2-t">Arquivos do projeto.</h2>
+      <p>Tudo o que foi entregue, aberto no GitHub.</p>
+    </div>
+    <div class="grid g2 reveal">
+      <a class="file" href="https://variacao-preco-combustivel.streamlit.app" target="_blank" rel="noopener"><span class="ic"><svg class="icon"><use href="#i-dash"/></svg></span><div><b>Dashboard Streamlit</b><span>Aplicação publicada no Streamlit Community Cloud</span></div><svg class="icon go"><use href="#i-arrow"/></svg></a>
+      <a class="file" href="https://github.com/NatanBraslavsky/variacao-preco-combustivel/blob/main/notebooks/analise_precos_combustiveis.ipynb" target="_blank" rel="noopener"><span class="ic"><svg class="icon"><use href="#i-book"/></svg></span><div><b>Notebook de análise</b><span>notebooks/analise_precos_combustiveis.ipynb</span></div><svg class="icon go"><use href="#i-arrow"/></svg></a>
+      <a class="file" href="https://github.com/NatanBraslavsky/variacao-preco-combustivel/blob/main/app.py" target="_blank" rel="noopener"><span class="ic"><svg class="icon"><use href="#i-code"/></svg></span><div><b>Código do dashboard</b><span>app.py, pages/ e src/</span></div><svg class="icon go"><use href="#i-arrow"/></svg></a>
+      <a class="file" href="dados/simulacao_precos_combustiveis_brasil.csv" download><span class="ic"><svg class="icon"><use href="#i-down"/></svg></span><div><b>Base de dados</b><span>simulacao_precos_combustiveis_brasil.csv · 347 KB</span></div><svg class="icon go"><use href="#i-arrow"/></svg></a>
+      <a class="file" href="https://github.com/NatanBraslavsky/variacao-preco-combustivel/blob/main/README.md" target="_blank" rel="noopener"><span class="ic"><svg class="icon"><use href="#i-file"/></svg></span><div><b>README</b><span>Documentação e instruções de execução</span></div><svg class="icon go"><use href="#i-arrow"/></svg></a>
+      <a class="file" href="https://github.com/NatanBraslavsky/variacao-preco-combustivel/tree/main/database" target="_blank" rel="noopener"><span class="ic"><svg class="icon"><use href="#i-db"/></svg></span><div><b>Banco SQLite</b><span>database/combustiveis.db</span></div><svg class="icon go"><use href="#i-arrow"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- Conclusão -->
+<section aria-labelledby="conc-t">
+  <div class="wrap">
+    <h2 id="conc-t" class="center reveal" style="font-size:clamp(2rem,4.4vw,3rem);letter-spacing:-.03em;margin:0 0 24px;text-align:center">Conclusão.</h2>
+    <p class="conclusion reveal">Os preços ficaram estáveis em torno de R$ 5,50, com diferenças pequenas entre estados, regiões e
+      combustíveis — e <em>nenhuma relação com inflação ou petróleo</em>. A principal descoberta é a ausência de padrão.</p>
+    <p class="note reveal"><b>Sobre a base:</b> os dados são simulados para fins didáticos. Na economia real, combustíveis
+      acompanham petróleo, câmbio e ICMS — a comparação com o IPCA do Banco Central evidencia essa diferença.
+      O mesmo pipeline pode ser aplicado aos dados abertos da ANP.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Natan Braslavsky · Linguagem de Programação — Análise e Visualização de Dados com Python · 2026</span>
+    <span><a href="https://github.com/NatanBraslavsky/variacao-preco-combustivel">GitHub</a> ·
+      <a href="https://github.com/AlexandreLouzada/Dados-Simulados-G1">Fonte dos dados</a> ·
+      <a href="https://dadosabertos.bcb.gov.br/dataset/13522-indice-nacional-de-precos-ao-consumidor-amplo-ipca---em-12-meses">IPCA (BCB)</a></span>
+  </div>
+</footer>
+
+<dialog id="lightbox" aria-label="Gráfico ampliado">
+  <div class="lb-inner">
+    <button class="lb-close" type="button" aria-label="Fechar"><svg class="icon"><use href="#i-x"/></svg></button>
+    <img src="" alt="">
+    <p></p>
+  </div>
+</dialog>
+
+<script>
+document.documentElement.classList.add("js");
+
+// Entrada suave das seções ao rolar
+const io = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+}, { rootMargin: "0px 0px -8% 0px" }) : null;
+document.querySelectorAll(".reveal").forEach((el) => io ? io.observe(el) : el.classList.add("in"));
+
+// Lightbox acessível com <dialog> (Esc fecha nativamente)
+const lb = document.getElementById("lightbox");
+const lbImg = lb.querySelector("img"), lbCap = lb.querySelector("p");
+document.querySelectorAll("[data-full]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    lbImg.src = btn.dataset.full;
+    lbImg.alt = btn.querySelector("img").alt;
+    lbCap.textContent = btn.dataset.caption;
+    lb.showModal();
+  });
+});
+lb.querySelector(".lb-close").addEventListener("click", () => lb.close());
+lb.addEventListener("click", (e) => { if (e.target === lb) lb.close(); });
+</script>
+</body>
+</html>

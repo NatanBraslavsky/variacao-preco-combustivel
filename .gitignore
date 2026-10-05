@@ -1,0 +1,30 @@
+# Ambiente virtual
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Streamlit (segredos locais nunca vão pro GitHub)
+.streamlit/secrets.toml
+
+# Claude Code: skills locais e config pessoal
+.claude/
+CLAUDE.md
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Banco temporário (o combustiveis.db É versionado para o deploy)
+database/*.db-journal
