@@ -6,7 +6,7 @@ from src.ui import (COR_NEUTRA, CORES_COMBUSTIVEL, cabecalho, interpretacao, lay
                     secao, sem_dados)
 
 df = st.session_state["df"]
-cabecalho("Comparação energética", "Qual combustível pesa mais no bolso?",
+cabecalho("Comparação energética", "Preços por combustível",
           "Preço, aumento acumulado e volatilidade de cada combustível no recorte filtrado.")
 if df.empty:
     sem_dados()

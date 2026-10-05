@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Combustíveis no Brasil · Projeto G1</title>
 <meta name="description" content="Análise e visualização da variação dos preços de combustíveis no Brasil entre 2015 e 2024 com Python, Pandas, Seaborn e Streamlit.">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230071e3'/%3E%3Cpath d='M10 24V9a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15M8 24h14M10 14h10M20 12l3 2v7a1.5 1.5 0 0 0 3 0v-8l-3-3' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
 :root {
@@ -20,28 +20,6 @@
   --radius: 22px; --radius-sm: 14px;
   --ease: cubic-bezier(.22,1,.36,1);
   color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #000000; --bg-alt: #0b0b0c; --surface: #161617;
-    --ink-1: #f5f5f7; --ink-2: #a1a1a6; --ink-3: #86868b;
-    --hair: rgba(255,255,255,.10); --hair-strong: rgba(255,255,255,.18);
-    --accent: #0a84ff; --accent-ink: #2997ff; --accent-soft: rgba(41,151,255,.12);
-    --warm: #ff9f0a; --warm-soft: rgba(255,159,10,.12);
-    --nav: rgba(22,22,23,.72);
-    --shadow-sm: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 22px 48px rgba(0,0,0,.5);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #000000; --bg-alt: #0b0b0c; --surface: #161617;
-  --ink-1: #f5f5f7; --ink-2: #a1a1a6; --ink-3: #86868b;
-  --hair: rgba(255,255,255,.10); --hair-strong: rgba(255,255,255,.18);
-  --accent: #0a84ff; --accent-ink: #2997ff; --accent-soft: rgba(41,151,255,.12);
-  --warm: #ff9f0a; --warm-soft: rgba(255,159,10,.12);
-  --nav: rgba(22,22,23,.72);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 22px 48px rgba(0,0,0,.5);
-  color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -97,9 +75,7 @@ a:hover { text-decoration: underline; }
 .eyebrow { font-size: .82rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
   color: var(--warm); margin: 0 0 14px; }
 .hero h1 { font-size: clamp(2.5rem, 7vw, 5rem); line-height: 1.04; letter-spacing: -.035em;
-  font-weight: 700; margin: 0 auto 20px; max-width: 14ch; }
-.hero h1 .grad { background: linear-gradient(100deg, #0071e3 10%, #eb6834 90%);
-  -webkit-background-clip: text; background-clip: text; color: transparent; }
+  font-weight: 700; margin: 0 auto 20px; max-width: 20ch; }
 .lead { font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.5; color: var(--ink-2);
   max-width: 40em; margin: 0 auto 32px; letter-spacing: -.005em; }
 .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
@@ -228,7 +204,6 @@ footer a { color: var(--ink-2); }
 .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
 .js .reveal.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
   *, *::before, *::after { animation: none !important; transition-duration: 0ms !important; }
 }
@@ -272,13 +247,13 @@ footer a { color: var(--ink-2); }
   </div>
 </nav>
 
-<main id="conteudo">
+<main id="conteudo" tabindex="-1">
 <header class="hero" id="topo">
   <div class="wrap">
     <p class="eyebrow">Projeto G1 · Análise e Visualização de Dados com Python</p>
-    <h1>Variação dos preços de <span class="grad">combustíveis</span> no Brasil.</h1>
-    <p class="lead">Dez anos de preços de gasolina, etanol, diesel, GNV e GLP em 20 estados,
-      investigados com Pandas, Seaborn e Streamlit — e cruzados com o IPCA real do Banco Central.</p>
+    <h1>Variação dos preços de combustíveis no Brasil</h1>
+    <p class="lead">Análise dos preços de gasolina, etanol, diesel, GNV e GLP em 20 estados,
+      de 2015 a 2024, com Python, Pandas, Seaborn e Streamlit.</p>
     <div class="actions">
       <a class="btn btn-primary" href="https://variacao-preco-combustivel.streamlit.app" target="_blank" rel="noopener">
         <svg class="icon"><use href="#i-dash"/></svg>Abrir dashboard</a>
@@ -296,8 +271,8 @@ footer a { color: var(--ink-2); }
 <section class="alt" aria-labelledby="kpi-t">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2 id="kpi-t">Os números do período.</h2>
-      <p>Os seis indicadores exigidos pelo projeto, calculados sobre a base tratada (3.937 registros).</p>
+      <h2 id="kpi-t">Indicadores</h2>
+      <p>Calculados sobre a base tratada (3.937 registros).</p>
     </div>
     <div class="kpis reveal">
       <div class="kpi"><div class="kpi-label">Preço médio nacional</div><div class="kpi-value">R$ 5,51</div><div class="kpi-note">média geral 2015–2024</div></div>
@@ -314,13 +289,13 @@ footer a { color: var(--ink-2); }
 <section id="sobre" aria-labelledby="sobre-t">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2 id="sobre-t">Sete perguntas. Respostas honestas.</h2>
-      <p>Combustíveis afetam transporte, logística, inflação e custo de vida. O projeto parte de uma base
-        simulada com 4.440 registros mensais (2015–2024) e responde às perguntas orientadoras do tema.</p>
+      <h2 id="sobre-t">Perguntas de análise</h2>
+      <p>Perguntas orientadoras do tema e o resultado encontrado. Base simulada com 4.440 registros
+        mensais (2015–2024).</p>
     </div>
     <div class="grid g3">
       <article class="card reveal"><span class="num">1</span><h3>Quais estados têm combustíveis mais caros?</h3>
-        <p class="answer">Ceará, Rio Grande do Sul e Santa Catarina — mas só ~6% acima do mais barato (Pará).</p></article>
+        <p class="answer">Ceará, Rio Grande do Sul e Santa Catarina, cerca de 6% acima do mais barato (Pará).</p></article>
       <article class="card reveal"><span class="num">2</span><h3>Qual combustível teve maior aumento?</h3>
         <p class="answer">Gasolina e etanol, cerca de +5% entre 2015 e 2024. O diesel foi o único a cair (−2,2%).</p></article>
       <article class="card reveal"><span class="num">3</span><h3>Existem diferenças regionais relevantes?</h3>
@@ -330,7 +305,7 @@ footer a { color: var(--ink-2); }
       <article class="card reveal"><span class="num">5</span><h3>Como os preços evoluíram?</h3>
         <p class="answer">De forma estável em torno de R$ 5,50: muito ruído mês a mês, nenhuma tendência ou sazonalidade.</p></article>
       <article class="card reveal"><span class="num">6</span><h3>Existe relação com a inflação?</h3>
-        <p class="answer">Não nesta base: correlação de −0,01 com a inflação e de 0,01 com o petróleo — indistinguíveis de zero.</p></article>
+        <p class="answer">Não nesta base. A correlação é de −0,01 com a inflação e de 0,01 com o petróleo, ou seja, próxima de zero.</p></article>
       <article class="card reveal"><span class="num">7</span><h3>Quais combustíveis são mais voláteis?</h3>
         <p class="answer">GNV e etanol lideram por pouco. Todos oscilam cerca de ±4 pontos percentuais por mês.</p></article>
     </div>
@@ -341,8 +316,8 @@ footer a { color: var(--ink-2); }
 <section class="alt" id="tratamento" aria-labelledby="trat-t">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2 id="trat-t">Antes dos gráficos, a limpeza.</h2>
-      <p>A base não tem valores nulos, mas esconde problemas de qualidade. Cada um foi documentado e tratado no notebook.</p>
+      <h2 id="trat-t">Tratamento dos dados</h2>
+      <p>A base não tem valores nulos, mas tem os problemas abaixo. Todos estão documentados no notebook.</p>
     </div>
     <div class="grid g3">
       <div class="card reveal"><div class="finding-value">503</div><h3>Duplicatas de chave</h3>
@@ -354,9 +329,9 @@ footer a { color: var(--ink-2); }
     </div>
     <div class="split reveal">
       <div>
-        <h3 style="font-size:1.5rem;letter-spacing:-.02em;margin:0 0 12px">O nível de preço não acompanhava o preço.</h3>
+        <h3 style="font-size:1.5rem;letter-spacing:-.02em;margin:0 0 12px">Coluna nivel_preco</h3>
         <ul>
-          <li>A coluna <b>nivel_preco</b> cobre de R$ 3 a R$ 8 em todas as classes — o "Crítico" tem média menor que o "Alto".</li>
+          <li>A coluna <b>nivel_preco</b> vai de R$ 3 a R$ 8 em todas as classes. O "Crítico" tem média menor que o "Alto".</li>
           <li>Criamos a <b>faixa recalculada</b> por quartis de cada combustível, coerente com o preço.</li>
           <li>Outros atributos: amplitude, direção da variação, trimestre, z-score e nome do estado.</li>
         </ul>
@@ -374,8 +349,8 @@ footer a { color: var(--ink-2); }
 <section id="analises" aria-labelledby="an-t">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2 id="an-t">O que os dados mostram.</h2>
-      <p>Gráficos gerados no notebook com Matplotlib e Seaborn. Toque em um gráfico para ampliar.</p>
+      <h2 id="an-t">Gráficos</h2>
+      <p>Gerados no notebook com Matplotlib e Seaborn. Clique em um gráfico para ampliar.</p>
     </div>
     <div class="gallery">
       <figure class="shot reveal">
@@ -391,7 +366,7 @@ footer a { color: var(--ink-2); }
       <figure class="shot reveal">
         <button type="button" data-full="imagens/03_barras_estados.png" data-caption="Preço médio por estado; os três mais caros em laranja." aria-label="Ampliar: barras por estado">
           <img src="imagens/03_barras_estados.png" width="1775" height="666" loading="lazy" alt="Barras do preço médio dos 20 estados em ordem decrescente; Ceará, Rio Grande do Sul e Santa Catarina destacados."></button>
-        <figcaption><b>Comparação estadual</b><span>CE, RS e SC lideram — com diferença de apenas ~6% para o último.</span></figcaption>
+        <figcaption><b>Comparação estadual</b><span>CE, RS e SC têm os maiores preços, cerca de 6% acima do Pará (menor).</span></figcaption>
       </figure>
       <figure class="shot reveal">
         <button type="button" data-full="imagens/04_barras_combustivel.png" data-caption="Preço médio ± desvio padrão e aumento acumulado 2015→2024 por combustível." aria-label="Ampliar: barras por combustível">
@@ -406,22 +381,22 @@ footer a { color: var(--ink-2); }
       <figure class="shot reveal">
         <button type="button" data-full="imagens/07_matriz_correlacao.png" data-caption="Matriz de correlação de Pearson entre as variáveis numéricas." aria-label="Ampliar: matriz de correlação">
           <img src="imagens/07_matriz_correlacao.png" width="927" height="800" loading="lazy" alt="Matriz de correlação triangular; quase todas as células próximas de zero, exceto preço × amplitude."></button>
-        <figcaption><b>Matriz de correlação</b><span>Só preço × amplitude é forte — e por construção.</span></figcaption>
+        <figcaption><b>Matriz de correlação</b><span>Só preço × amplitude é forte, porque a amplitude depende do preço.</span></figcaption>
       </figure>
       <figure class="shot reveal wide">
         <button type="button" data-full="imagens/08_ipca_real_vs_simulado.png" data-caption="IPCA real acumulado em 12 meses (API do Banco Central) comparado com a inflação da base simulada." aria-label="Ampliar: IPCA real versus simulado">
           <img src="imagens/08_ipca_real_vs_simulado.png" width="1775" height="576" loading="lazy" alt="Linha laranja do IPCA real com picos em 2016 (10,7%) e 2022 (12,1%), e linha azul da inflação simulada oscilando em torno de 7% sem padrão."></button>
-        <figcaption><b>Integração com a API do Banco Central</b><span>O IPCA real mostra os ciclos de 2016 e 2022; a inflação simulada é ruído em torno de 7%.</span></figcaption>
+        <figcaption><b>Integração com a API do Banco Central</b><span>O IPCA real tem picos em 2016 e 2022; a inflação simulada oscila em torno de 7% sem padrão.</span></figcaption>
       </figure>
       <figure class="shot reveal">
         <button type="button" data-full="imagens/09_volatilidade.png" data-caption="Distribuição da variação mensal por combustível (violinos)." aria-label="Ampliar: volatilidade">
           <img src="imagens/09_volatilidade.png" width="1774" height="605" loading="lazy" alt="Cinco violinos simétricos e praticamente idênticos centrados em zero, de −15% a +15%."></button>
-        <figcaption><b>Volatilidade</b><span>Alta, mas igual para todos os combustíveis.</span></figcaption>
+        <figcaption><b>Volatilidade</b><span>Variação mensal de cerca de ±4 p.p., parecida entre os combustíveis.</span></figcaption>
       </figure>
       <figure class="shot reveal">
         <button type="button" data-full="imagens/12_periodos_criticos.png" data-caption="Volatilidade mensal; em laranja, os 10% meses mais instáveis." aria-label="Ampliar: períodos críticos">
           <img src="imagens/12_periodos_criticos.png" width="1776" height="546" loading="lazy" alt="Barras mensais de volatilidade de 2015 a 2024, com os meses mais instáveis em laranja espalhados pela década."></button>
-        <figcaption><b>Períodos críticos</b><span>Picos isolados, sem crise prolongada.</span></figcaption>
+        <figcaption><b>Períodos críticos</b><span>Meses instáveis espalhados pelo período, sem concentração em um ano.</span></figcaption>
       </figure>
     </div>
   </div>
@@ -431,8 +406,8 @@ footer a { color: var(--ink-2); }
 <section class="alt" id="dashboard" aria-labelledby="dash-t">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2 id="dash-t">Explore você mesmo.</h2>
-      <p>Dashboard Streamlit multipágina com seis filtros compartilhados. KPIs, gráficos e textos de interpretação se recalculam a cada seleção.</p>
+      <h2 id="dash-t">Dashboard</h2>
+      <p>Streamlit, 7 páginas e 6 filtros. KPIs, gráficos e textos são recalculados conforme os filtros.</p>
     </div>
     <div class="pages reveal">
       <div class="page"><span class="ic"><svg class="icon"><use href="#i-dash"/></svg></span><div><b>Visão geral</b><span>KPIs, evolução nacional e conclusão executiva</span></div></div>
@@ -458,8 +433,8 @@ footer a { color: var(--ink-2); }
 <section aria-labelledby="arq-t">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2 id="arq-t">Como foi construído.</h2>
-      <p>Um pipeline único em <code>src/</code> alimenta o notebook e o dashboard: tudo parte do mesmo tratamento.</p>
+      <h2 id="arq-t">Arquitetura</h2>
+      <p>O código de tratamento fica em <code>src/</code> e é usado pelo notebook e pelo dashboard.</p>
     </div>
     <div class="flow reveal">
       <div class="step"><b>Leitura</b><span>CSV UTF-8 com BOM e validação das 14 colunas</span></div>
@@ -470,7 +445,7 @@ footer a { color: var(--ink-2); }
       <div class="step"><b>Visualização</b><span>Notebook (Seaborn) e dashboard (Streamlit + Plotly)</span></div>
     </div>
     <div class="section-head reveal" style="margin-top:72px">
-      <h2 style="font-size:clamp(1.6rem,3vw,2.1rem)">Tecnologias.</h2>
+      <h2 style="font-size:clamp(1.6rem,3vw,2.1rem)">Tecnologias</h2>
     </div>
     <div class="tech reveal">
       <div><b>Python 3.12</b><span>Linguagem base</span></div>
@@ -489,8 +464,8 @@ footer a { color: var(--ink-2); }
 <section class="alt" id="arquivos" aria-labelledby="arq2-t">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2 id="arq2-t">Arquivos do projeto.</h2>
-      <p>Tudo o que foi entregue, aberto no GitHub.</p>
+      <h2 id="arq2-t">Arquivos do projeto</h2>
+      <p>Links para os arquivos no GitHub.</p>
     </div>
     <div class="grid g2 reveal">
       <a class="file" href="https://variacao-preco-combustivel.streamlit.app" target="_blank" rel="noopener"><span class="ic"><svg class="icon"><use href="#i-dash"/></svg></span><div><b>Dashboard Streamlit</b><span>Aplicação publicada no Streamlit Community Cloud</span></div><svg class="icon go"><use href="#i-arrow"/></svg></a>
@@ -506,12 +481,12 @@ footer a { color: var(--ink-2); }
 <!-- Conclusão -->
 <section aria-labelledby="conc-t">
   <div class="wrap">
-    <h2 id="conc-t" class="center reveal" style="font-size:clamp(2rem,4.4vw,3rem);letter-spacing:-.03em;margin:0 0 24px;text-align:center">Conclusão.</h2>
-    <p class="conclusion reveal">Os preços ficaram estáveis em torno de R$ 5,50, com diferenças pequenas entre estados, regiões e
-      combustíveis — e <em>nenhuma relação com inflação ou petróleo</em>. A principal descoberta é a ausência de padrão.</p>
-    <p class="note reveal"><b>Sobre a base:</b> os dados são simulados para fins didáticos. Na economia real, combustíveis
-      acompanham petróleo, câmbio e ICMS — a comparação com o IPCA do Banco Central evidencia essa diferença.
-      O mesmo pipeline pode ser aplicado aos dados abertos da ANP.</p>
+    <h2 id="conc-t" class="center reveal" style="font-size:clamp(2rem,4.4vw,3rem);letter-spacing:-.03em;margin:0 0 24px;text-align:center">Conclusão</h2>
+    <p class="conclusion reveal">Os preços ficam em torno de R$ 5,50 durante todo o período. As diferenças entre
+      estados, regiões e combustíveis são pequenas, e não há correlação com inflação ou petróleo.</p>
+    <p class="note reveal"><b>Sobre a base:</b> os dados são simulados. Na economia real, o preço dos combustíveis
+      depende do petróleo, do câmbio e do ICMS, e a comparação com o IPCA do Banco Central mostra essa diferença.
+      O mesmo código pode ser usado com os dados abertos da ANP.</p>
   </div>
 </section>
 </main>
@@ -535,6 +510,40 @@ footer a { color: var(--ink-2); }
 
 <script>
 document.documentElement.classList.add("js");
+
+// Rolagem suave até a seção (independe da configuração de animação do sistema)
+const nav = document.querySelector(".nav");
+let rolagem = null;
+function rolarAte(destino) {
+  cancelAnimationFrame(rolagem);
+  const inicio = window.scrollY;
+  const alvo = Math.max(0, destino.getBoundingClientRect().top + inicio - nav.offsetHeight - 12);
+  const distancia = alvo - inicio;
+  const duracao = Math.min(1000, Math.max(450, Math.abs(distancia) * 0.35));
+  const t0 = performance.now();
+  const easing = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const passo = (agora) => {
+    const t = Math.min(1, (agora - t0) / duracao);
+    window.scrollTo(0, inicio + distancia * easing(t));
+    if (t < 1) rolagem = requestAnimationFrame(passo);
+  };
+  rolagem = requestAnimationFrame(passo);
+}
+// Interrompe a animação se o usuário rolar por conta própria
+["wheel", "touchstart", "keydown"].forEach((ev) =>
+  window.addEventListener(ev, () => cancelAnimationFrame(rolagem), { passive: true }));
+
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+  link.addEventListener("click", (e) => {
+    const id = link.getAttribute("href");
+    const destino = id.length > 1 && document.querySelector(id);
+    if (!destino) return;
+    e.preventDefault();
+    rolarAte(destino);
+    history.pushState(null, "", id);
+    if (id === "#conteudo") destino.focus({ preventScroll: true });
+  });
+});
 
 // Entrada suave das seções ao rolar
 const io = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {

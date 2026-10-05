@@ -10,7 +10,7 @@ from src.ui import (COR_DESTAQUE, COR_NEUTRA, COR_PRINCIPAL, cabecalho, interpre
 
 df = st.session_state["df"]
 ipca = st.session_state["ipca"]
-cabecalho("Correlação estatística", "Inflação e petróleo explicam o preço?",
+cabecalho("Correlação estatística", "Preço, inflação e petróleo",
           "Dispersões, matriz de correlação e comparação com o IPCA real obtido da API do "
           "Banco Central.")
 if df.empty or len(df) < 10:

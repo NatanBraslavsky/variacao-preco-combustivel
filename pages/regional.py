@@ -14,7 +14,7 @@ def carregar_geojson() -> dict:
 
 
 df = st.session_state["df"]
-cabecalho("Análise geográfica", "Onde o combustível é mais caro?",
+cabecalho("Análise geográfica", "Preços por região e estado",
           "Comparação entre os 20 estados e as 5 regiões presentes na base, com mapa interativo.")
 if df.empty:
     sem_dados()

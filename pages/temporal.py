@@ -8,7 +8,7 @@ from src.ui import (COR_DESTAQUE, COR_NEUTRA, COR_PRINCIPAL, CORES_COMBUSTIVEL, 
                     interpretacao, layout_grafico, secao, sem_dados)
 
 df = st.session_state["df"]
-cabecalho("Análise temporal", "Como os preços evoluíram?",
+cabecalho("Análise temporal", "Evolução dos preços",
           "Evolução por combustível, sazonalidade mês a mês e identificação dos períodos "
           "de maior instabilidade.")
 if df.empty:
